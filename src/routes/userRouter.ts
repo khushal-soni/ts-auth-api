@@ -1,39 +1,71 @@
 import express, { Request, Response, NextFunction } from "express";
-import * as userController from "../controllers/userController";
-import auth from "../middleware/auth";
-import { Schemas, validateSchema } from "../middleware/ValidateSchema";
-const router = express.Router();
+import userController from "../controllers/user.controller";
+import auth from "../middleware/auth.middleware";
+import {
+    Schemas,
+    validateSchema,
+} from "../middleware/joiValidation.middleware";
 
-// Get list of users - this is only to check Collection without using mongo on termial
-router.get("/", auth, userController.getRequest);
+class UserRouter {
+    public router: express.Router;
 
-router.post(
-    "/signup",
-    validateSchema(Schemas.user.create),
-    userController.registerUser
-);
+    constructor() {
+        this.router = express.Router();
+        this.allRouterRegister();
+    }
 
-router.post(
-    "/login",
-    validateSchema(Schemas.user.login),
-    userController.userLogin
-);
+    private allRouterRegister() {
+        this.getRouters();
+        this.postRouters();
+        this.patchRouters();
+    }
 
-router.post("/logout", userController.userLogout);
+    private getRouters() {
+        this.router.get("/", auth, userController.getRequest);
 
-router.patch("/refresh", userController.handleRefreshToken);
+        this.router.get(
+            "/welcome",
+            auth,
+            (req: express.Request, res: express.Response) => {
+                res.status(200).send("Welcome 🙌");
+                console.log(req.user);
+            }
+        );
+    }
 
-// Password related routes
-router.patch("/change-password", auth, userController.changePassword);
+    private postRouters() {
+        this.router.post(
+            "/signup",
+            validateSchema(Schemas.user.create),
+            userController.registerUser
+        );
 
-router.patch("/forgot-password", userController.forgotPassword);
+        this.router.post(
+            "/login",
+            validateSchema(Schemas.user.login),
+            userController.userLogin
+        );
 
-router.patch("/reset-password/:token", userController.resetPassword);
+        this.router.post("/logout", userController.userLogout);
+    }
 
-// Test authentication middleware
-router.get("/welcome", auth, (req, res) => {
-    res.status(200).send("Welcome 🙌");
-    console.log(req.user);
-});
+    private patchRouters() {
+        this.router.patch("/refresh", userController.handleRefreshToken);
 
-export default router;
+        // Password related routes
+        this.router.patch(
+            "/change-password",
+            auth,
+            userController.changePassword
+        );
+
+        this.router.patch("/forgot-password", userController.forgotPassword);
+
+        this.router.patch(
+            "/reset-password/:token",
+            userController.resetPassword
+        );
+    }
+}
+
+export default new UserRouter().router;

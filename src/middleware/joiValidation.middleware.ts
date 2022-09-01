@@ -1,7 +1,7 @@
 import Joi, { ObjectSchema } from "joi";
 import { NextFunction, Request, Response } from "express";
 import Logger from "../utils/logger";
-import { IUser } from "../interface/custom";
+import { IUserModel } from "../interface/custom";
 
 export const validateSchema = (schema: ObjectSchema) => {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -17,7 +17,7 @@ export const validateSchema = (schema: ObjectSchema) => {
 
 export const Schemas = {
     user: {
-        create: Joi.object<IUser>({
+        create: Joi.object<IUserModel>({
             username: Joi.string().required(),
             email: Joi.string().required(),
             password: Joi.string().required(),

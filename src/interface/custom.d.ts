@@ -27,7 +27,7 @@ declare global {
 }
 
 // Doing this so that instances will have save method on them
-export interface IUser {
+export interface IUserModel extends Document {
     username: string;
     email: string;
     password: string;
@@ -37,7 +37,7 @@ export interface IUser {
     resetLink?: string | undefined;
 }
 
-export interface IUserModel extends IUser, Document {}
+// export interface IUserModel extends IUser, Document {}
 
 export interface DecodedToken {
     _id?: string;
