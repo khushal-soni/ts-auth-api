@@ -11,7 +11,3 @@ export const vars = {
     mailjetPublicKey: process.env.MJ_APIKEY_PUBLIC,
     mailjetPrivateKey: process.env.MJ_APIKEY_PRIVATE,
 };
-
-export default {
-    vars,
-};

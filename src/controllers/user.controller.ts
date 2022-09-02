@@ -5,6 +5,7 @@ import Mailjet from "node-mailjet";
 import { responseMessage } from "../config/errorManager.config";
 import { User } from "../models/userModel";
 import Logger from "../utils/logger";
+import UserService from "../services/user.service";
 
 const mailjet: Mailjet = new Mailjet({
     apiKey: process.env.MJ_APIKEY_PUBLIC || "1f1208d7531b4422bbf3ab38318ec3f2",
@@ -33,62 +34,8 @@ export default class userController {
                 });
             }
 
-            // Check if the user already exists
-            const oldUser = await User.findOne({ email });
-            if (!oldUser) {
-                return res
-                    .status(409)
-                    .json({ error: responseMessage.AUTH_0015 });
-            }
-
-            // create User instance
-            const user = new User({
-                username,
-                email: email.toLowerCase(),
-                password,
-                status: "active",
-            });
-            // create access and refresh tokens
-            const accessToken: string = await jwt.sign(
-                { _id: user._id, email },
-                process.env.ACCESS_TOKEN_KEY,
-                { expiresIn: "5m" }
-            );
-            const refreshToken: string = await jwt.sign(
-                { _id: user._id, email },
-                process.env.REFRESH_TOKEN_KEY,
-                { expiresIn: "10m" }
-            );
-
-            if (!accessToken || !refreshToken) {
-                return res.status(500).json({
-                    error: responseMessage.AUTH_0008,
-                });
-            }
-
-            // Save token to User Instance
-            user.accessToken = accessToken;
-            user.refreshToken = refreshToken;
-            // Save the User Instance to DB
-            const isCreated = await user.save();
-            if (!isCreated) {
-                return res.status(500).json({
-                    error: responseMessage.GNRL_0002,
-                });
-            }
-
-            // Send the refresh token as http-only cookie
-            res.cookie("jwt", refreshToken, {
-                httpOnly: true,
-                sameSite: "none",
-                secure: true,
-            });
-
-            // Send the user document in response if everything goes well.
-            res.status(200).json({
-                username: user.username,
-                accessToken: accessToken,
-            });
+            // Call service method which will process the data and return a result i.e error/false or registeration data
+            UserService.userRegisterService({ username, email, password }, res);
         } catch (err: any) {
             Logger.error(err);
             res.status(500).json({ result: 0, error_message: err.message });
