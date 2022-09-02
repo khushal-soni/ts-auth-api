@@ -1,6 +1,4 @@
-import mongoose from "mongoose";
 import { User } from "../models/userModel";
-import Logger from "../utils/logger";
 import { vars } from "../config/vars.config";
 import { IUserModel } from "../interface/custom";
 
@@ -13,8 +11,8 @@ export default class userDBServices {
         return users;
     }
 
-    static async findUser(email: string) {
-        const ifUserExists = await User.findOne({ email });
+    static async findUser(searchParams: any) {
+        const ifUserExists = await User.findOne(searchParams);
         // If there is a user return user data else false
         if (ifUserExists) {
             return ifUserExists;

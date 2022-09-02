@@ -5,7 +5,6 @@ import { Response } from "express";
 interface IResOptions {
     statusCode: number;
     message: string;
-    responseType: string;
     responseData?: any;
 }
 
@@ -14,6 +13,14 @@ export default class CustomResponse {
         res.status(options.statusCode).json({
             responseMessage: options.message,
             responseData: options.responseData,
+        });
+    }
+
+    static sendOK(res: Response, msg?: string | object): object {
+        res.status(200);
+        return res.json({
+            status: "success",
+            message: msg,
         });
     }
 }

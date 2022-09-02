@@ -21,7 +21,7 @@ class UserRouter {
     }
 
     private getRouters() {
-        this.router.get("/", auth, userController.getRequest);
+        // this.router.get("/", auth, userController.getRequest);
 
         this.router.get(
             "/welcome",
