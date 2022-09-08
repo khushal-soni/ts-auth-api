@@ -5,8 +5,8 @@ export default class Logger {
 
     public static info = (args: any) =>
         console.log(
-            chalk.blue(`[${new Date().toLocaleString()}] [INFO]`),
-            typeof args === "string" ? chalk.blueBright(args) : args
+            chalk.cyan(`[${new Date().toLocaleString()}] [INFO]`),
+            typeof args === "string" ? chalk.cyanBright(args) : args
         );
 
     public static warn = (args: any) =>

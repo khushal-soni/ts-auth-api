@@ -1,10 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import spreadSheetController from "../controllers/spreadSheet.controller";
-import auth from "../middleware/auth.middleware";
-// import {
-//     Schemas,
-//     validateSchema,
-// } from "../middleware/joiValidation.middleware";
+import { upload } from "../middleware/multer.middleware";
 
 class spreadSheetRouter {
     public router: express.Router;
@@ -19,13 +15,11 @@ class spreadSheetRouter {
     }
 
     private getRouters() {
-        this.router.get(
-            "/welcome",
-            (req: express.Request, res: express.Response) => {
-                res.status(200).send("Welcome 🙌");
-                console.log(req.user);
-            }
-        );
+        this.router.get('/', spreadSheetController.getRequest);
+    }
+
+    private postRouters() {
+        this.router.post('/upload', upload.single('spreadsheet'), spreadSheetController.importData)
     }
 }
 

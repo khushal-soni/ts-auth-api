@@ -7,6 +7,8 @@ import cookieParser from "cookie-parser";
 
 import userRouter from "../routes/userRouter";
 import Logger from "../utils/logger";
+import spreadSheetController from "../controllers/spreadSheet.controller";
+import spreadSheetRouter from "../routes/spreadSheetRouter";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,6 +18,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "/public")));
 app.use("/users", userRouter);
+app.use("/api/spreadsheet", spreadSheetRouter);
 
 app.get("*", (req: Request, res: Response) => {
     res.status(404).send("Error: Page not Found");
