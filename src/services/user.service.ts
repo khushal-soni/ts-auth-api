@@ -244,7 +244,6 @@ export default class UserService {
 
     static async forgotPassword(req: any) {
         const { email } = req.body;
-        console.log(email);
 
         const user = await userDBServices.findUser({ email });
         if (!user) {
@@ -264,7 +263,9 @@ export default class UserService {
 
         user.resetLink = resetToken;
         const result = await userDBServices.saveInstance(user);
-        Logger.info(result);
+
+        Logger.info(`Reset Token - ` + result.resetLink);
+
         if (!result) {
             return {
                 error: {
