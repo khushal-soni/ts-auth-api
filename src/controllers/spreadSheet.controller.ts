@@ -21,15 +21,18 @@ export default class spreadSheetController {
                 });
             }
 
-            const result: any = spreadSheetService.importData(req);
+            const result: any = await spreadSheetService.importData(req);
 
             if (result && result.error) {
                 return CustomResponse.sendResponse(res, result.error);
             }
 
+            console.log(result);
+
             return CustomResponse.sendResponse(res, result);
         } catch (error: any) {
-            Logger.info(`${error.message}`);
+            console.log(error);
+
             return CustomResponse.sendResponse(res, {
                 statusCode: 500,
                 message: responseMessage.GNRL_0001,

@@ -7,7 +7,6 @@ export default class multerMiddleware {
             cb(null, "uploads");
         },
         filename: (req, file, cb) => {
-            console.log(file.originalname);
             cb(null, `${Date.now()}-spreadsheet-${file.originalname}`);
         },
     });

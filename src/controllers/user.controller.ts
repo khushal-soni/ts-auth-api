@@ -3,9 +3,9 @@ import { responseMessage } from "../config/errorManager.config";
 import Logger from "../utils/logger";
 import UserService from "../services/user.service";
 import CustomResponse from "../utils/customResponse.utils";
+import { User } from "../models/userModel";
 
 export default class userController {
-    /*
     ///////////////////////////////////////////
     // IGNORE THIS ROUTE //////////////////////
     static async getRequest(req: Request, res: Response) {
@@ -17,7 +17,6 @@ export default class userController {
     }
     ///////////////////////////////////////////
     ///////////////////////////////////////////
-    */
 
     static async registerUser(req: Request, res: Response) {
         try {

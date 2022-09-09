@@ -7,6 +7,7 @@ import { Segment, Country, Product, Report } from "../models/spreadsheet.model";
 import chalk from "chalk";
 
 export default class spreadSheetService {
+    // Data to extract - `Segments, Countries and Products` and get Unique Items from them using `sets`
     static segments: string[] = [];
     static countries: string[] = [];
     static products: string[] = [];
@@ -75,40 +76,6 @@ export default class spreadSheetService {
         }
     }
 
-    static async exportToMongo(rows: any) {
-        try {
-            let result;
-            for (let row of rows) {
-                // Modify the Document before saving it so that it stores the ID
-                const segmentID = await Segment.findOne({
-                    segment: row.segment,
-                });
-                const countryID = await Country.findOne({ name: row.country });
-                const productID = await Product.findOne({ name: row.product });
-
-                row.segment = segmentID;
-                row.country = countryID;
-                row.product = productID;
-
-                // let document = new Report(row);
-                // result = await document.save();
-                // console.log(result);
-            }
-
-            console.log(rows.slice(-1));
-
-            return "working till here";
-            // Perform bulk operation here
-            // return object containing number of docs inserted
-        } catch (error: any) {
-            if (error.message.includes(`duplicate key`)) {
-                this.duplicateMsg(error);
-            } else {
-                console.error(Logger.error(error.message));
-            }
-        }
-    }
-
     static async importData(requestBody: any) {
         // Reads the file, it extracts the number of sheets per workbook
 
@@ -125,7 +92,6 @@ export default class spreadSheetService {
 
         // Array of Object containing each row as an object
         const rows = worksheets.Sheet1;
-        // Data to extract - `Segments, Countries and Products` and get Unique Items from them using `sets`
 
         // Looping through each object i.e 'a row'
         // Manipulate Date and Rename all fields
@@ -163,36 +129,41 @@ export default class spreadSheetService {
         const segmentsSet = new Set(this.segments);
         const countriesSet = new Set(this.countries);
         const productSet = new Set(this.products);
-        // Convert Sets back to Arrays and the duplicate date is gone!!!
+
         this.segments = Array.from(segmentsSet);
         this.countries = Array.from(countriesSet);
         this.products = Array.from(productSet);
 
-        // console.log(
-        //     this.segments +
-        //         "\n\n" +
-        //         this.countries +
-        //         "\n\n" +
-        //         this.products +
-        //         "\n\n"
-        // );
-        // console.log(rows.slice(-1));
-
-        /*
-        // Double check if these functions are working properly
         this.saveSegments(this.segments);
         this.saveCountries(this.countries);
         this.saveProducts(this.products);
 
-        // Modify this method so that it used insertMany and returns the number of documents inserted, and then send that as response
-        this.exportToMongo(rows);
+        for (let row of rows) {
+            const segmentDoc = await Segment.findOne({
+                segment: row.segment,
+            });
+            const countryDoc = await Country.findOne({ name: row.country });
+            const productDoc = await Product.findOne({ name: row.product });
 
-        return {};
-        */
+            row.segment = segmentDoc._id;
+            row.country = countryDoc._id;
+            row.product = productDoc._id;
+        }
+
+        const result = await Report.insertMany(rows);
+
+        if (!result) {
+            return {
+                error: {
+                    statusCode: 409,
+                    message: responseMessage.AUTH_0015,
+                },
+            };
+        }
 
         return {
             statusCode: 200,
-            message: `Uploaded File Successfully`,
+            message: `${result.length} records uploaded`,
         };
     }
 }
