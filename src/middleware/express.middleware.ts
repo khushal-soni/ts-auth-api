@@ -6,12 +6,9 @@ import "../config/dbConnection.config";
 import cookieParser from "cookie-parser";
 
 import userRouter from "../routes/userRouter";
-import Logger from "../utils/logger";
-import spreadSheetController from "../controllers/spreadSheet.controller";
 import spreadSheetRouter from "../routes/spreadSheetRouter";
 
 const app = express();
-const port = process.env.PORT || 3000;
 
 // Set a middleware for logger
 app.use(express.json());

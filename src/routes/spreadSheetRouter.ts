@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import spreadSheetController from "../controllers/spreadSheet.controller";
-import { upload } from "../middleware/multer.middleware";
+import multerMiddleware from "../middleware/multer.middleware";
 
 class spreadSheetRouter {
     public router: express.Router;
@@ -12,14 +12,19 @@ class spreadSheetRouter {
 
     private allRouterRegister() {
         this.getRouters();
+        this.postRouters();
     }
 
     private getRouters() {
-        this.router.get('/', spreadSheetController.getRequest);
+        this.router.get("/", spreadSheetController.getRequest);
     }
 
     private postRouters() {
-        this.router.post('/upload', upload.single('spreadsheet'), spreadSheetController.importData)
+        this.router.post(
+            "/upload",
+            multerMiddleware.upload.single("file"),
+            spreadSheetController.importData
+        );
     }
 }
 

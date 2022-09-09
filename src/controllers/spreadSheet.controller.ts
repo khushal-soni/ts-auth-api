@@ -1,13 +1,9 @@
 import { Request, Response } from "express";
-import { responseMessage } from "../config/errorManager.config";
 import Logger from "../utils/logger";
-import UserService from "../services/user.service";
+import { responseMessage } from "../config/errorManager.config";
 import CustomResponse from "../utils/customResponse.utils";
-// const multer = require("multer");
-import * as multer from "multer";
-
+import spreadSheetService from "../services/spreadsheet.service";
 export default class spreadSheetController {
-   
     ///////////////////////////////////////////
     // IGNORE THIS ROUTE //////////////////////
     static async getRequest(req: Request, res: Response) {
@@ -17,7 +13,27 @@ export default class spreadSheetController {
     ///////////////////////////////////////////
 
     static async importData(req: Request, res: Response) {
-        
+        try {
+            if (!req.file) {
+                return CustomResponse.sendResponse(res, {
+                    statusCode: 400,
+                    message: `Please upload an excel file`,
+                });
+            }
+
+            const result: any = spreadSheetService.importData(req);
+
+            if (result && result.error) {
+                return CustomResponse.sendResponse(res, result.error);
+            }
+
+            return CustomResponse.sendResponse(res, result);
+        } catch (error: any) {
+            Logger.info(`${error.message}`);
+            return CustomResponse.sendResponse(res, {
+                statusCode: 500,
+                message: responseMessage.GNRL_0001,
+            });
+        }
     }
-   
 }
