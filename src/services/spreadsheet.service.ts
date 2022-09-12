@@ -2,17 +2,71 @@ import { Request, Response } from "express";
 import { responseMessage } from "../config/errorManager.config";
 import xlsx from "xlsx";
 import moment from "moment";
-import { Product, Report } from "../models/spreadsheet.model";
 import chalk from "chalk";
+import { Product, Report } from "../models/spreadsheet.model";
+import spreadSheetDBServices from "../dbServices/spreadSheet.dbServices";
 
+const path: string = "./resources/spreadSheets/";
 export default class spreadSheetService {
-    static async saveProduct(product: string) {
+    static async exportData(req: Request) {
         try {
-            const productDoc = new Product({
-                name: product,
-            });
-            const result = await productDoc.save();
-            return result;
+            const data: any = await spreadSheetDBServices.getData();
+            if (!data) {
+                return {
+                    error: {
+                        statusCode: 409,
+                        message: responseMessage.AUTH_0015,
+                    },
+                };
+            }
+
+            // INCOMPLETE 2. Countries in comma separated
+
+            for (let row of data) {
+                row.Country = row.country;
+                row.Segment = row.segment;
+                row.Product = row.product;
+                row["Discount Band"] = row.discountBand;
+                row["Product Price"] = row.productPrice;
+                row["Units Sold"] = row.unitsSold;
+                row["Gross Sales"] = row.grossSales;
+                row.Profit = row.profit;
+                // row["UTC Date"] = moment(row.dateTimeInUTC).format(
+                //     "MM-DD-YYYY"
+                // );
+                row["Date and Time"] = moment(row.dateTime).format(
+                    "MM-DD-YYYY hh:mm:ss"
+                );
+                row.Date = row.date;
+                row["Month Number"] = row.monthNumber;
+                row.Year = row.year;
+
+                delete row.country;
+                delete row.segment;
+                delete row.product;
+                delete row.discountBand;
+                delete row.productPrice;
+                delete row.unitsSold;
+                delete row.grossSales;
+                delete row.profit;
+                delete row.dateTimeInUTC;
+                delete row.dateTime;
+                delete row.date;
+                delete row.monthNumber;
+                delete row.year;
+            }
+
+            const fileName: string = `report_${Date.now()}.xlsx`;
+            const ws = xlsx.utils.json_to_sheet(data);
+            const wb = xlsx.utils.book_new();
+            xlsx.utils.book_append_sheet(wb, ws, "Sheet1");
+            xlsx.writeFile(wb, `${path}${fileName}`);
+
+            return {
+                statusCode: 200,
+                responseData: fileName,
+                path,
+            };
         } catch (error: any) {
             console.log(chalk.red.underline(error.message));
         }
@@ -53,7 +107,9 @@ export default class spreadSheetService {
                 });
 
                 if (!productExists) {
-                    let result: any = await this.saveProduct(row.product);
+                    let result: any = await spreadSheetDBServices.saveProduct(
+                        row.product
+                    );
                     if (!result) {
                         throw new Error(responseMessage.GNRL_0002);
                     }

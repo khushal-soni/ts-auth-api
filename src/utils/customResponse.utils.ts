@@ -6,6 +6,7 @@ interface IResOptions {
     statusCode: number;
     message: string;
     responseData?: any;
+    path?: any;
 }
 
 export default class CustomResponse {
@@ -21,6 +22,14 @@ export default class CustomResponse {
         return res.json({
             status: "success",
             message: msg,
+        });
+    }
+
+    static sendSpreadSheet(res: Response, options: IResOptions) {
+        res.download(`${options.path}${options.responseData}`, (err) => {
+            if (err) {
+                console.log(err);
+            }
         });
     }
 }

@@ -16,7 +16,7 @@ class spreadSheetRouter {
     }
 
     private getRouters() {
-        this.router.get("/", spreadSheetController.getRequest);
+        this.router.get("/download", spreadSheetController.download);
     }
 
     private postRouters() {

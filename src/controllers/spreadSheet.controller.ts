@@ -39,4 +39,23 @@ export default class spreadSheetController {
             });
         }
     }
+
+    static async download(req: Request, res: Response) {
+        try {
+            const result: any = await spreadSheetService.exportData(req);
+
+            if (result && result.error) {
+                return CustomResponse.sendResponse(res, result.error);
+            }
+
+            return CustomResponse.sendSpreadSheet(res, result);
+        } catch (error: any) {
+            console.log(error);
+
+            return CustomResponse.sendResponse(res, {
+                statusCode: 500,
+                message: responseMessage.GNRL_0001,
+            });
+        }
+    }
 }

@@ -1,3 +1,9 @@
+## Setup
+
+**Install Dependecies -** `npm install`
+
+**Create Directories in the project root -** `resouces/spreadSheets` `resources/uploads`
+
 ## Query for exporting the data from mongodb
 
 ```js

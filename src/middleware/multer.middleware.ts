@@ -4,7 +4,7 @@ import multer from "multer";
 export default class multerMiddleware {
     static storage = multer.diskStorage({
         destination: (req, file, cb) => {
-            cb(null, "./uploads");
+            cb(null, "./resources/uploads");
         },
         filename: (req, file, cb) => {
             cb(null, `${Date.now()}-spreadsheet-${file.originalname}`);
