@@ -1,29 +1,5 @@
-const mongoose = require("mongoose");
-
-const SegmentSchema = new mongoose.Schema({
-    segment: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        index: {
-            unique: true,
-            partialFilterExpression: { name: { $type: "string" } },
-        },
-    },
-});
-
-const CountriesSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        trim: true,
-        required: true,
-        index: {
-            unique: true,
-            partialFilterExpression: { name: { $type: "string" } },
-        },
-    },
-});
+// const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const ProductsSchema = new mongoose.Schema({
     name: {
@@ -39,11 +15,11 @@ const ProductsSchema = new mongoose.Schema({
 
 const ReportSchema = new mongoose.Schema({
     country: {
-        type: mongoose.Types.ObjectId,
+        type: String,
         required: true,
     },
     segment: {
-        type: mongoose.Types.ObjectId,
+        type: String,
         required: true,
     },
     product: {
@@ -76,7 +52,5 @@ const ReportSchema = new mongoose.Schema({
     },
 });
 
-export const Segment = mongoose.model("Segment", SegmentSchema);
-export const Country = mongoose.model("Country", CountriesSchema);
 export const Product = mongoose.model("Product", ProductsSchema);
 export const Report = mongoose.model("Report", ReportSchema);

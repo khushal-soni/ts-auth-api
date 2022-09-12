@@ -8,6 +8,7 @@ declare global {
         interface Request {
             accessToken?: string;
             user?: any;
+            file?: any;
         }
     }
 
